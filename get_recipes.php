@@ -1,5 +1,5 @@
 //Create get_recipes.php
-//This file will retrieve all recipes from your database and send them to the frontend as JSON.
+//This file will retrieve all recipes from the database and send them to the frontend as JSON
 
 
 <?php
