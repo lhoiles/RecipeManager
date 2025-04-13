@@ -2,7 +2,6 @@
 //This file will retrieve all recipes from your database and send them to the frontend as JSON.
 
 
-
 <?php
 // Allow requests from any domain (important for frontend-backend communication)
 header("Access-Control-Allow-Origin: *");
@@ -11,7 +10,6 @@ header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
 
 // Connect to the MySQL database using MySQLi
-// ("localhost", "root", "", "recipe_manager") = (host, username, password, database name)
 $conn = new mysqli("localhost", "root", "", "recipe_manager");
 
 // Check if the connection failed
@@ -40,7 +38,6 @@ if ($result->num_rows > 0) {
 
 // Convert the recipes array into JSON and send it to the client (frontend)
 echo json_encode($recipes);
-
 
 // Close the database connection
 $conn->close();
