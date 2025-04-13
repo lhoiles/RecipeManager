@@ -47,6 +47,6 @@ $conn->close();
 ?>
 
 //This PHP file does the following:
-//Connects to your recipe_manager database
+//Connects to recipe_manager database
 //Runs a query to get all rows from the recipes table
 //Sends the result as a JSON list (which React will later read)
