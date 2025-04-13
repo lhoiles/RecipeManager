@@ -1,5 +1,5 @@
-Create get_recipes.php
-This file will retrieve all recipes from your database and send them to the frontend as JSON.
+# Create get_recipes.php
+**This file will retrieve all recipes from your database and send them to the frontend as JSON.**
 
 
 
@@ -46,7 +46,7 @@ echo json_encode($recipes);
 $conn->close();
 ?>
 
-This PHP file does the following:
+**This PHP file does the following:
 Connects to your recipe_manager database
 Runs a query to get all rows from the recipes table
-Sends the result as a JSON list (which React will later read)
+Sends the result as a JSON list (which React will later read)**
