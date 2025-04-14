@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 // Import Axios to make HTTP requests to your PHP backend
 import axios from "axios";
 
-// Import the AddRecipeForm component from the same folder
+// Import the AddRecipeForm component
 import AddRecipeForm from "./AddRecipeForm";
 
 function App() {
