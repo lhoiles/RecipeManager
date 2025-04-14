@@ -38,7 +38,7 @@ function App() {
         margin: "auto",               // Center horizontally
       }}
     >
-      <h1>📖 Recipe Manager</h1>
+      <h1>Recipe Manager</h1>
 
       {/* AddRecipeForm is a separate component that contains the form to add a new recipe */}
       {/* We pass fetchRecipes as a prop so the list refreshes after a recipe is added */}
