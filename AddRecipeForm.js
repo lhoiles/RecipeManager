@@ -1,112 +1,177 @@
-// Import React and useState hook to manage form input values
 import React, { useState } from "react";
-
-// Import Axios to send HTTP requests to the backend
 import axios from "axios";
 
-// Define the AddRecipeForm component
-// 'onRecipeAdded' is a function passed from App.js to refresh the recipe list after adding a new one
 function AddRecipeForm({ onRecipeAdded }) {
-  // useState hooks to manage form field values
-  const [title, setTitle] = useState("");
-  const [ingredients, setIngredients] = useState("");
-  const [instructions, setInstructions] = useState("");
+    const [title, setTitle] = useState(""); // Recipe title
+    const [instructions, setInstructions] = useState(""); // Cooking instructions
 
-  // Function that runs when the form is submitted
-  const handleAddRecipe = (e) => {
-    e.preventDefault(); // Prevents page reload
+    // Ingredients: array of { name, quantity, unit }
+    const [ingredients, setIngredients] = useState([
+        { name: "", quantity: "", unit: "" }
+    ]);
 
-    // Create a new recipe object using the input values
-    const newRecipe = {
-      title,
-      ingredients,
-      instructions,
+    // Handle input changes for ingredients
+    const handleIngredientChange = (index, field, value) => {
+        const updated = [...ingredients];
+        updated[index][field] = value;
+        setIngredients(updated);
     };
 
-    // Send the recipe to the backend using a POST request
-    axios
-      .post("http://localhost/recipe-api/add_recipe.php", newRecipe)
-      .then((response) => {
-        console.log("Recipe added:", response.data);
+    // Add a blank ingredient row
+    const addIngredientField = () => {
+        setIngredients([...ingredients, { name: "", quantity: "", unit: "" }]);
+    };
 
-        // Clear the form inputs after successful submission
-        setTitle("");
-        setIngredients("");
-        setInstructions("");
+    // Remove a specific ingredient row
+    const removeIngredientField = (index) => {
+        const updated = ingredients.filter((_, i) => i !== index);
+        setIngredients(updated);
+    };
 
-        // Call the callback function from App.js to refresh the recipe list
-        if (onRecipeAdded) onRecipeAdded();
-      })
-      .catch((error) => {
-        // Log any errors that happen during the request
-        console.error("Error adding recipe:", error);
-      });
-  };
+    // Submit the full recipe with ingredients
+    const handleAddRecipe = (e) => {
+        e.preventDefault();
 
-  return (
-    // Form to input new recipe data
-    <form onSubmit={handleAddRecipe} style={{ marginBottom: "2rem" }}>
-      <h2>Add New Recipe</h2>
+        const newRecipe = {
+            title,
+            instructions,
+            ingredients: ingredients.filter(
+                (i) => i.name && i.quantity && i.unit
+            )
+        };
 
-      {/* Input for the recipe title */}
-      <input
-        type="text"
-        placeholder="Title"
-        value={title} // Controlled input: React manages the value
-        onChange={(e) => setTitle(e.target.value)} // Update state on input change
-        required
-        style={{
-          display: "block",
-          width: "100%",
-          padding: "0.5rem",
-          marginBottom: "1rem",
-        }}
-      />
+        axios
+            .post("http://localhost/recipe-api/add_recipe.php", newRecipe)
+            .then((response) => {
+                console.log("Recipe added:", response.data);
+                // Reset form
+                setTitle("");
+                setInstructions("");
+                setIngredients([{ name: "", quantity: "", unit: "" }]);
+                // Refresh list
+                if (onRecipeAdded) onRecipeAdded();
+            })
+            .catch((error) => {
+                console.error("Error adding recipe:", error);
+            });
+    };
 
-      {/* Textarea for ingredients */}
-      <textarea
-        placeholder="Ingredients"
-        value={ingredients}
-        onChange={(e) => setIngredients(e.target.value)}
-        required
-        style={{
-          display: "block",
-          width: "100%",
-          padding: "0.5rem",
-          marginBottom: "1rem",
-        }}
-      />
+    return (
+        <form onSubmit={handleAddRecipe} style={{ marginBottom: "2rem" }}>
+            <h2>Add New Recipe</h2>
 
-      {/* Textarea for instructions */}
-      <textarea
-        placeholder="Instructions"
-        value={instructions}
-        onChange={(e) => setInstructions(e.target.value)}
-        required
-        style={{
-          display: "block",
-          width: "100%",
-          padding: "0.5rem",
-          marginBottom: "1rem",
-        }}
-      />
+            {/* Recipe Title */}
+            <input
+                type="text"
+                placeholder="Recipe Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+                style={{ width: "100%", padding: "0.5rem", marginBottom: "1rem" }}
+            />
 
-      {/* Submit button */}
-      <button
-        type="submit"
-        style={{
-          padding: "0.5rem 1rem",
-          background: "#28a745",
-          color: "white",
-          border: "none",
-          borderRadius: "5px",
-        }}
-      >
-        Add Recipe
-      </button>
-    </form>
-  );
+            {/* Instructions */}
+            <textarea
+                placeholder="Instructions"
+                value={instructions}
+                onChange={(e) => setInstructions(e.target.value)}
+                required
+                style={{ width: "100%", padding: "0.5rem", marginBottom: "1rem" }}
+            />
+
+            <h3>Ingredients</h3>
+            {ingredients.map((ingredient, index) => (
+                <div
+                    key={index}
+                    style={{
+                        display: "flex",
+                        gap: "0.5rem",
+                        marginBottom: "0.5rem",
+                        alignItems: "center"
+                    }}
+                >
+                    <input
+                        type="text"
+                        placeholder="Name"
+                        value={ingredient.name}
+                        onChange={(e) =>
+                            handleIngredientChange(index, "name", e.target.value)
+                        }
+                        required
+                        style={{ flex: 2 }}
+                    />
+                    <input
+                        type="number"
+                        placeholder="Qty"
+                        value={ingredient.quantity}
+                        step="0.01"
+                        onChange={(e) =>
+                            handleIngredientChange(index, "quantity", e.target.value)
+                        }
+                        required
+                        style={{ flex: 1 }}
+                    />
+                    <select
+                        value={ingredient.unit}
+                        onChange={(e) =>
+                            handleIngredientChange(index, "unit", e.target.value)
+                        }
+                        required
+                        style={{ flex: 1 }}
+                    >
+                        <option value="">Unit</option>
+                        <option value="cups">cups</option>
+                        <option value="tbsp">tbsp</option>
+                        <option value="tsp">tsp</option>
+                        <option value="oz">oz</option>
+                        <option value="lb">lb</option>
+                        <option value="pcs">pcs</option>
+                    </select>
+                    {/* Remove button */}
+                    <button
+                        type="button"
+                        onClick={() => removeIngredientField(index)}
+                        style={{
+                            background: "#dc3545",
+                            color: "#fff",
+                            border: "none",
+                            padding: "0.2rem 0.5rem",
+                            borderRadius: "4px",
+                            cursor: "pointer"
+                        }}
+                    >
+                        x
+                    </button>
+                </div>
+            ))}
+
+            {/* Add another ingredient */}
+            <button
+                type="button"
+                onClick={addIngredientField}
+                style={{ marginBottom: "1rem" }}
+            >
+                + Add Ingredient
+            </button>
+
+            <br />
+
+            {/* Submit button */}
+            <button
+                type="submit"
+                style={{
+                    padding: "0.5rem 1rem",
+                    background: "#28a745",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "5px"
+                }}
+            >
+                Add Recipe
+            </button>
+        </form>
+    );
 }
 
-// Export the component so App.js can use it
 export default AddRecipeForm;
+
