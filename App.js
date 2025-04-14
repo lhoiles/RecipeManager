@@ -4,13 +4,20 @@ import React, { useEffect, useState } from "react";
 // Import Axios to make HTTP requests to your PHP backend
 import axios from "axios";
 
+// Import the AddRecipeForm component from the same folder
+import AddRecipeForm from "./AddRecipeForm";
+
 function App() {
   // State to hold the array of recipes fetched from the backend
   const [recipes, setRecipes] = useState([]);
 
   // useEffect runs once when the component loads (like componentDidMount)
   useEffect(() => {
-    // Make a GET request to your PHP backend API to fetch recipes
+    fetchRecipes(); // Call function to load recipes
+  }, []);
+
+  // Function to fetch all recipes from the backend
+  const fetchRecipes = () => {
     axios
       .get("http://localhost/recipe-api/get_recipes.php")
       .then((response) => {
@@ -21,7 +28,7 @@ function App() {
         // If there’s an error (like WAMP not running), log it
         console.error("Error fetching recipes:", error);
       });
-  }, []); // Empty dependency array = run only once on first load
+  };
 
   return (
     <div
@@ -32,6 +39,10 @@ function App() {
       }}
     >
       <h1>📖 Recipe Manager</h1>
+
+      {/* AddRecipeForm is a separate component that contains the form to add a new recipe */}
+      {/* We pass fetchRecipes as a prop so the list refreshes after a recipe is added */}
+      <AddRecipeForm onRecipeAdded={fetchRecipes} />
 
       {/* If no recipes exist, show a message */}
       {recipes.length === 0 ? (
@@ -66,3 +77,4 @@ function App() {
 
 // Export this component as the default one to use in index.js
 export default App;
+
