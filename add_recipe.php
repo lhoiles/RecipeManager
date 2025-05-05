@@ -2,60 +2,61 @@
 //This file will send new recipes (title, ingredients, instructions) from frontend into the database
 
 <?php
-// Allow cross-origin requests
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
 header("Access-Control-Allow-Methods: POST");
 
-// Connect to MySQL
+// Connect to the MySQL database
 $conn = new mysqli("localhost", "root", "", "recipe_manager");
 
-// Check the DB connection
+// Handle connection errors
 if ($conn->connect_error) {
     die(json_encode(["error" => "Connection failed: " . $conn->connect_error]));
 }
 
-// Get the POST data as JSON
+// Read JSON input from the React frontend
 $data = json_decode(file_get_contents("php://input"), true);
 
-// Extract recipe info
+// Validate incoming data
+if (!$data || !isset($data["title"]) || !isset($data["instructions"])) {
+    echo json_encode(["error" => "Missing required fields"]);
+    exit;
+}
+
 $title = $data["title"];
 $instructions = $data["instructions"];
-$ingredients = $data["ingredients"]; // This should be an array of ingredients
+$ingredients = $data["ingredients"];
 
-// Insert the recipe (title + instructions) first
+// Insert recipe into recipes table
 $sql = "INSERT INTO recipes (title, ingredients, instructions) VALUES (?, '', ?)";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("ss", $title, $instructions);
 
 if ($stmt->execute()) {
-    // Get the ID of the recipe we just inserted
     $recipe_id = $conn->insert_id;
+    $success = true;
 
-    // Now insert each ingredient into the ingredients table
-    $inserted_all = true;
-
+    // Insert ingredients into ingredients table
     foreach ($ingredients as $ingredient) {
         $name = $ingredient["name"];
         $quantity = $ingredient["quantity"];
         $unit = $ingredient["unit"];
 
-        $sql_ingredient = "INSERT INTO ingredients (recipe_id, name, quantity, unit) VALUES (?, ?, ?, ?)";
-        $stmt_ingredient = $conn->prepare($sql_ingredient);
-        $stmt_ingredient->bind_param("isds", $recipe_id, $name, $quantity, $unit);
+        $sql_ing = "INSERT INTO ingredients (recipe_id, name, quantity, unit) VALUES (?, ?, ?, ?)";
+        $stmt_ing = $conn->prepare($sql_ing);
+        $stmt_ing->bind_param("isds", $recipe_id, $name, $quantity, $unit);
 
-        if (!$stmt_ingredient->execute()) {
-            $inserted_all = false;
+        if (!$stmt_ing->execute()) {
+            $success = false;
             break;
         }
     }
 
-    if ($inserted_all) {
-        echo json_encode(["message" => "Recipe and ingredients added successfully"]);
+    if ($success) {
+        echo json_encode(["success" => true, "message" => "Recipe and ingredients added successfully"]);
     } else {
-        echo json_encode(["error" => "Recipe added but failed to insert some ingredients"]);
+        echo json_encode(["error" => "Recipe saved, but some ingredients failed to save"]);
     }
-
 } else {
     echo json_encode(["error" => "Failed to add recipe"]);
 }
