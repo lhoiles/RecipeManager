@@ -1,40 +1,40 @@
-//Create get_recipes.php
-//This file will retrieve all recipes from the database and send them to the frontend as JSON
-
-
 <?php
-// Allow requests from any domain (important for frontend-backend communication)
 header("Access-Control-Allow-Origin: *");
-
-// Set the response content type to JSON
 header("Content-Type: application/json");
 
-// Connect to the MySQL database using MySQLi
 $conn = new mysqli("localhost", "root", "", "recipe_manager");
 
-// Check if the connection failed
 if ($conn->connect_error) {
-    // If connection failed, stop the script and return an error message as JSON
     die(json_encode(["error" => "Connection failed: " . $conn->connect_error]));
 }
 
-// SQL query to select all rows from the 'recipes' table
-$sql = "SELECT * FROM recipes";
+$recipes_sql = "SELECT id, title, instructions FROM recipes";
+$recipes_result = $conn->query($recipes_sql);
 
-// Run the query and store the result
-$result = $conn->query($sql);
-
-// Create an empty array to store the recipe data
 $recipes = [];
 
-// If the query returned one or more rows
-if ($result->num_rows > 0) {
-    // Loop through each row in the result
-    while ($row = $result->fetch_assoc()) {
-        // Add each row (recipe) to the recipes array
-        $recipes[] = $row;
+while ($recipe = $recipes_result->fetch_assoc()) {
+    $recipe_id = $recipe["id"];
+
+    // Fetch ingredients for this recipe
+    $ingredients_sql = "SELECT name, quantity, unit FROM ingredients WHERE recipe_id = $recipe_id";
+    $ingredients_result = $conn->query($ingredients_sql);
+
+    $ingredient_list = [];
+    while ($ing = $ingredients_result->fetch_assoc()) {
+        $ingredient_list[] = $ing["quantity"] . " " . $ing["unit"] . " " . $ing["name"];
     }
+
+    // Join all ingredients into one display string
+    $recipe["ingredients"] = implode(", ", $ingredient_list);
+
+    $recipes[] = $recipe;
 }
+
+echo json_encode($recipes);
+$conn->close();
+?>
+
 
 // Convert the recipes array into JSON and send it to the client (frontend)
 echo json_encode($recipes);
