@@ -1,4 +1,4 @@
-// Import necessary hooks from React
+// Import necessary hooks from react
 import React, { useEffect, useState } from "react";
 
 // Import routing tools from react-router-dom
