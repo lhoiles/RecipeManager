@@ -1,7 +1,17 @@
-Create delete_recipe.php
-This will will let me delete a recipe by its ID
+//Create delete_recipe.php
+//This will will let me delete a recipe by its ID
 
 <?php
+
+header('Access-Control-Allow-Origin: http://localhost:3000'); // Or use '*' for any origin, but specifying is more secure
+header('Access-Control-Allow-Methods: POST, GET, OPTIONS, DELETE'); // Add DELETE or the methods you use
+header('Access-Control-Allow-Headers: Content-Type, Authorization'); // Make sure Content-Type is included
+
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    // Stop script execution after sending headers for preflight requests
+    exit(0);
+}
+
 // Allow cross-origin and DELETE method
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
