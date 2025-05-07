@@ -2,31 +2,51 @@ import React, { useEffect, useState } from "react";
 
 function RecipeCard({ recipe, onUpdate }) {
     const [isSaved, setIsSaved] = useState(false);
+    const [isFavourite, setIsFavourite] = useState(false);
 
-    // On component mount, check if this recipe is already saved in localStorage
+    // Check if this recipe is already saved and if it's favourited
     useEffect(() => {
         const saved = JSON.parse(localStorage.getItem("savedRecipes") || "[]");
-        setIsSaved(saved.some(r => r.id === recipe.id));
+        const found = saved.find(r => r.id === recipe.id);
+        if (found) {
+            setIsSaved(true);
+            setIsFavourite(!!found.isFavourite);
+        }
     }, [recipe.id]);
 
-    // Toggle save/remove and update localStorage
+    // Save or remove recipe from localStorage
     const handleToggleSave = () => {
         const saved = JSON.parse(localStorage.getItem("savedRecipes") || "[]");
-
         let updated;
+
         if (isSaved) {
-            // Remove this recipe
             updated = saved.filter(r => r.id !== recipe.id);
+            setIsFavourite(false); // unfavourite when removed
         } else {
-            // Add this recipe
-            updated = [...saved, recipe];
+            updated = [...saved, { ...recipe, isFavourite: false }];
         }
 
-        // Save updated list back to localStorage
         localStorage.setItem("savedRecipes", JSON.stringify(updated));
         setIsSaved(!isSaved);
 
-        // Notify parent component to refresh if needed
+        if (onUpdate) onUpdate();
+    };
+
+    // Toggle favourite status (only for saved recipes)
+    const handleToggleFavourite = () => {
+        if (!isSaved) return;
+
+        const saved = JSON.parse(localStorage.getItem("savedRecipes") || "[]");
+        const updated = saved.map(r => {
+            if (r.id === recipe.id) {
+                return { ...r, isFavourite: !isFavourite };
+            }
+            return r;
+        });
+
+        localStorage.setItem("savedRecipes", JSON.stringify(updated));
+        setIsFavourite(!isFavourite);
+
         if (onUpdate) onUpdate();
     };
 
@@ -36,12 +56,19 @@ function RecipeCard({ recipe, onUpdate }) {
             <p><strong>Ingredients:</strong> {recipe.ingredients}</p>
             <p><strong>Instructions:</strong> {recipe.instructions}</p>
 
-            <button onClick={handleToggleSave}>
-                {isSaved ? "Remove from My Recipes" : "Add to My Recipes"}
-            </button>
+            <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+                <button onClick={handleToggleSave}>
+                    {isSaved ? "Remove from My Recipes" : "Add to My Recipes"}
+                </button>
+
+                {isSaved && (
+                    <button onClick={handleToggleFavourite}>
+                        {isFavourite ? "★ Favourite" : "☆ Favourite"}
+                    </button>
+                )}
+            </div>
         </div>
     );
 }
 
 export default RecipeCard;
-
