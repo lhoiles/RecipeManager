@@ -1,20 +1,28 @@
 // src/MyRecipes.js
 import React, { useEffect, useState } from "react";
-import RecipeCard from "./RecipeCard"; 
+import RecipeCard from "./RecipeCard";
 
 function MyRecipes() {
     const [savedRecipes, setSavedRecipes] = useState([]);
 
-    // Load recipes from localStorage
     useEffect(() => {
-        const saved = JSON.parse(localStorage.getItem("savedRecipes") || "[]");
-        setSavedRecipes(saved);
+        loadSavedRecipes();
     }, []);
 
-    // Update view if a recipe is removed from inside RecipeCard
+    const loadSavedRecipes = () => {
+        const saved = JSON.parse(localStorage.getItem("savedRecipes") || "[]");
+
+        // Sort: favourites first
+        const sorted = saved.sort((a, b) => {
+            return (b.isFavourite === true) - (a.isFavourite === true);
+        });
+
+        setSavedRecipes(sorted);
+    };
+
+    // Called after toggling save/favourite
     const handleUpdate = () => {
-        const updated = JSON.parse(localStorage.getItem("savedRecipes") || "[]");
-        setSavedRecipes(updated);
+        loadSavedRecipes();
     };
 
     return (
@@ -23,11 +31,11 @@ function MyRecipes() {
             {savedRecipes.length === 0 ? (
                 <p>You haven't saved any recipes yet.</p>
             ) : (
-                savedRecipes.map((recipe) => (
+                savedRecipes.map(recipe => (
                     <RecipeCard
                         key={recipe.id}
                         recipe={recipe}
-                        onUpdate={handleUpdate} // optional refresh
+                        onUpdate={handleUpdate}
                     />
                 ))
             )}
@@ -36,3 +44,4 @@ function MyRecipes() {
 }
 
 export default MyRecipes;
+
