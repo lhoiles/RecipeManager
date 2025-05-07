@@ -1,42 +1,58 @@
 // src/MyRecipes.js
 import React, { useEffect, useState } from "react";
+import axios from "axios";
+import AddRecipeForm from "./AddRecipeForm";
 import RecipeCard from "./RecipeCard";
 
 function MyRecipes() {
-    const [savedRecipes, setSavedRecipes] = useState([]);
+    const [allRecipes, setAllRecipes] = useState([]);
 
+    // Load recipes from database + localStorage
     useEffect(() => {
-        loadSavedRecipes();
+        fetchAllRecipes();
     }, []);
 
-    const loadSavedRecipes = () => {
-        const saved = JSON.parse(localStorage.getItem("savedRecipes") || "[]");
+    const fetchAllRecipes = () => {
+        axios.get("http://localhost/recipe-api/get_recipes.php")
+            .then((response) => {
+                const databaseRecipes = Array.isArray(response.data) ? response.data : [];
 
-        // Sort: favourites first
-        const sorted = saved.sort((a, b) => {
-            return (b.isFavourite === true) - (a.isFavourite === true);
-        });
+                const localSaved = JSON.parse(localStorage.getItem("savedRecipes") || "[]");
 
-        setSavedRecipes(sorted);
-    };
+                // Merge unique recipes from both sources (prevent duplicates)
+                const merged = [];
 
-    // Called after toggling save/favourite
-    const handleUpdate = () => {
-        loadSavedRecipes();
+                const seenIds = new Set();
+
+                [...localSaved, ...databaseRecipes].forEach((recipe) => {
+                    if (!seenIds.has(recipe.id)) {
+                        merged.push(recipe);
+                        seenIds.add(recipe.id);
+                    }
+                });
+
+                // Favourites first
+                const sorted = merged.sort((a, b) => (b.isFavourite === true) - (a.isFavourite === true));
+                setAllRecipes(sorted);
+            })
+            .catch((error) => {
+                console.error("Error loading recipes:", error);
+            });
     };
 
     return (
         <div style={{ padding: "2rem" }}>
-            <h2>My Saved Recipes</h2>
-            {savedRecipes.length === 0 ? (
-                <p>You haven't saved any recipes yet.</p>
+            <h2>My Recipes</h2>
+
+            {/* Form to create a new recipe */}
+            <AddRecipeForm onRecipeAdded={fetchAllRecipes} />
+
+            {/* Show all saved or added recipes */}
+            {allRecipes.length === 0 ? (
+                <p>You haven't added or saved any recipes yet.</p>
             ) : (
-                savedRecipes.map(recipe => (
-                    <RecipeCard
-                        key={recipe.id}
-                        recipe={recipe}
-                        onUpdate={handleUpdate}
-                    />
+                allRecipes.map((recipe) => (
+                    <RecipeCard key={recipe.id} recipe={recipe} onUpdate={fetchAllRecipes} />
                 ))
             )}
         </div>
@@ -44,4 +60,5 @@ function MyRecipes() {
 }
 
 export default MyRecipes;
+
 
