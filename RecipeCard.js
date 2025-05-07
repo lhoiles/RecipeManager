@@ -1,29 +1,33 @@
 import React, { useEffect, useState } from "react";
 
-function RecipeCard({ recipe }) {
+function RecipeCard({ recipe, onUpdate }) {
     const [isSaved, setIsSaved] = useState(false);
 
-    // Load saved state from localStorage
+    // On component mount, check if this recipe is already saved in localStorage
     useEffect(() => {
         const saved = JSON.parse(localStorage.getItem("savedRecipes") || "[]");
         setIsSaved(saved.some(r => r.id === recipe.id));
     }, [recipe.id]);
 
-    // Toggle save/remove
+    // Toggle save/remove and update localStorage
     const handleToggleSave = () => {
         const saved = JSON.parse(localStorage.getItem("savedRecipes") || "[]");
 
         let updated;
         if (isSaved) {
-            // Remove from saved
+            // Remove this recipe
             updated = saved.filter(r => r.id !== recipe.id);
         } else {
-            // Add to saved
+            // Add this recipe
             updated = [...saved, recipe];
         }
 
+        // Save updated list back to localStorage
         localStorage.setItem("savedRecipes", JSON.stringify(updated));
         setIsSaved(!isSaved);
+
+        // Notify parent component to refresh if needed
+        if (onUpdate) onUpdate();
     };
 
     return (
@@ -40,3 +44,4 @@ function RecipeCard({ recipe }) {
 }
 
 export default RecipeCard;
+
