@@ -5,35 +5,35 @@ import AddRecipeForm from "./AddRecipeForm";
 import RecipeCard from "./RecipeCard";
 
 function MyRecipes() {
-    const [allRecipes, setAllRecipes] = useState([]);
+    const [myRecipes, setMyRecipes] = useState([]);
 
-    // Load recipes from database + localStorage
     useEffect(() => {
-        fetchAllRecipes();
+        loadMyRecipes();
     }, []);
 
-    const fetchAllRecipes = () => {
+    const loadMyRecipes = () => {
+        // Load from database (user-created ones)
         axios.get("http://localhost/recipe-api/get_recipes.php")
             .then((response) => {
-                const databaseRecipes = Array.isArray(response.data) ? response.data : [];
+                const dbRecipes = Array.isArray(response.data) ? response.data : [];
 
-                const localSaved = JSON.parse(localStorage.getItem("savedRecipes") || "[]");
+                // Load saved recipes from localStorage
+                const saved = JSON.parse(localStorage.getItem("savedRecipes") || "[]");
 
-                // Merge unique recipes from both sources (prevent duplicates)
-                const merged = [];
+                // Merge without duplication (based on ID)
+                const merged = [...saved];
 
-                const seenIds = new Set();
-
-                [...localSaved, ...databaseRecipes].forEach((recipe) => {
-                    if (!seenIds.has(recipe.id)) {
-                        merged.push(recipe);
-                        seenIds.add(recipe.id);
+                // Add manually added recipes that aren't already saved
+                dbRecipes.forEach(dbRecipe => {
+                    const alreadySaved = saved.some(savedRecipe => savedRecipe.id === dbRecipe.id);
+                    if (!alreadySaved) {
+                        merged.push(dbRecipe);
                     }
                 });
 
                 // Favourites first
                 const sorted = merged.sort((a, b) => (b.isFavourite === true) - (a.isFavourite === true));
-                setAllRecipes(sorted);
+                setMyRecipes(sorted);
             })
             .catch((error) => {
                 console.error("Error loading recipes:", error);
@@ -44,15 +44,14 @@ function MyRecipes() {
         <div style={{ padding: "2rem" }}>
             <h2>My Recipes</h2>
 
-            {/* Form to create a new recipe */}
-            <AddRecipeForm onRecipeAdded={fetchAllRecipes} />
+            {/* Add recipe form */}
+            <AddRecipeForm onRecipeAdded={loadMyRecipes} />
 
-            {/* Show all saved or added recipes */}
-            {allRecipes.length === 0 ? (
+            {myRecipes.length === 0 ? (
                 <p>You haven't added or saved any recipes yet.</p>
             ) : (
-                allRecipes.map((recipe) => (
-                    <RecipeCard key={recipe.id} recipe={recipe} onUpdate={fetchAllRecipes} />
+                myRecipes.map((recipe) => (
+                    <RecipeCard key={recipe.id} recipe={recipe} onUpdate={loadMyRecipes} />
                 ))
             )}
         </div>
