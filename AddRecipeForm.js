@@ -10,25 +10,25 @@ function AddRecipeForm({ onRecipeAdded }) {
         { name: "", quantity: "", unit: "" }
     ]);
 
-    // Handle input changes for ingredients
+    // Handle ingredient changes
     const handleIngredientChange = (index, field, value) => {
         const updated = [...ingredients];
         updated[index][field] = value;
         setIngredients(updated);
     };
 
-    // Add a blank ingredient row
+    // Add ingredient input row
     const addIngredientField = () => {
         setIngredients([...ingredients, { name: "", quantity: "", unit: "" }]);
     };
 
-    // Remove a specific ingredient row
+    // Remove an ingredient row
     const removeIngredientField = (index) => {
         const updated = ingredients.filter((_, i) => i !== index);
         setIngredients(updated);
     };
 
-    // Submit the full recipe with ingredients
+    // Submit recipe to backend AND localStorage
     const handleAddRecipe = (e) => {
         e.preventDefault();
 
@@ -40,15 +40,31 @@ function AddRecipeForm({ onRecipeAdded }) {
             )
         };
 
+        // Send to PHP backend
         axios
             .post("http://localhost/recipe-api/add_recipe.php", newRecipe)
             .then((response) => {
                 console.log("Recipe added:", response.data);
-                // Reset form
+
+                // Save to localStorage too
+                const saved = JSON.parse(localStorage.getItem("savedRecipes") || "[]");
+
+                const createdRecipe = {
+                    id: response.data.recipe_id || Date.now(), // use backend ID or fallback
+                    ...newRecipe,
+                    isFavourite: false
+                };
+
+                localStorage.setItem(
+                    "savedRecipes",
+                    JSON.stringify([...saved, createdRecipe])
+                );
+
+                // Clear form
                 setTitle("");
                 setInstructions("");
                 setIngredients([{ name: "", quantity: "", unit: "" }]);
-                // Refresh list
+
                 if (onRecipeAdded) onRecipeAdded();
             })
             .catch((error) => {
@@ -60,7 +76,6 @@ function AddRecipeForm({ onRecipeAdded }) {
         <form onSubmit={handleAddRecipe} style={{ marginBottom: "2rem" }}>
             <h2>Add New Recipe</h2>
 
-            {/* Recipe Title */}
             <input
                 type="text"
                 placeholder="Recipe Title"
@@ -70,7 +85,6 @@ function AddRecipeForm({ onRecipeAdded }) {
                 style={{ width: "100%", padding: "0.5rem", marginBottom: "1rem" }}
             />
 
-            {/* Instructions */}
             <textarea
                 placeholder="Instructions"
                 value={instructions}
@@ -127,7 +141,6 @@ function AddRecipeForm({ onRecipeAdded }) {
                         <option value="lb">lb</option>
                         <option value="pcs">pcs</option>
                     </select>
-                    {/* Remove button */}
                     <button
                         type="button"
                         onClick={() => removeIngredientField(index)}
@@ -145,7 +158,6 @@ function AddRecipeForm({ onRecipeAdded }) {
                 </div>
             ))}
 
-            {/* Add another ingredient */}
             <button
                 type="button"
                 onClick={addIngredientField}
@@ -156,7 +168,6 @@ function AddRecipeForm({ onRecipeAdded }) {
 
             <br />
 
-            {/* Submit button */}
             <button
                 type="submit"
                 style={{
@@ -174,4 +185,3 @@ function AddRecipeForm({ onRecipeAdded }) {
 }
 
 export default AddRecipeForm;
-
