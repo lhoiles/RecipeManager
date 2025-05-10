@@ -6,11 +6,13 @@ import RecipeCard from "./RecipeCard"; // This must exist and be correctly named
 function RecipeList() {
     // Start with an empty array so .length and .map always work
     const [recipes, setRecipes] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        setIsLoading(true);
         axios.get("http://localhost/recipe-api/get_recipes.php")
             .then(response => {
-                // Make sure the response is actually an array
+                // Make sure the response is actually an array lol
                 if (Array.isArray(response.data)) {
                     setRecipes(response.data);
                 } else {
@@ -21,23 +23,37 @@ function RecipeList() {
             .catch(error => {
                 console.error("Error fetching recipes:", error);
                 setRecipes([]); // fallback to empty array
+            })
+            .finally(() => {
+                setIsLoading(false);
             });
     }, []);
 
     return (
-        <div style={{ padding: "2rem" }}>
-            <h2>All Recipes</h2>
+        <div>
+            <div className="page-header">
+                <h1>Discover Recipes</h1>
+                <p>Browse through our collection of delicious recipes</p>
+            </div>
 
-            {/* Show fallback text if no recipes are found */}
-            {recipes.length === 0 ? (
-                <p>No recipes found.</p>
+            {isLoading ? (
+                <div style={{ textAlign: 'center', padding: '2rem' }}>
+                    <p>Loading recipes...</p>
+                </div>
+            ) : recipes.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '2rem' }}>
+                    <p>No recipes found.</p>
+                </div>
             ) : (
-                recipes.map(recipe => (
-                    <RecipeCard key={recipe.id} recipe={recipe} />
-                ))
+                <div className="recipe-grid">
+                    {recipes.map(recipe => (
+                        <RecipeCard key={recipe.id} recipe={recipe} />
+                    ))}
+                </div>
             )}
         </div>
     );
 }
 
 export default RecipeList;
+
