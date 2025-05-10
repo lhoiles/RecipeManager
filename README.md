@@ -32,7 +32,7 @@ This application demonstrates the implementation of a SPA using React and PHP
 - **Create React App**: For bootstrapping the React application
 - **Git**: Version control system
 
-## 📋 Prerequisites
+## Prerequisites
 
 Before you begin, ensure you have the following installed:
 - Node.js (v14.0.0 or higher)
@@ -41,7 +41,7 @@ Before you begin, ensure you have the following installed:
 - Apache web server
 - npm (comes with Node.js)
 
-## 🚀 Installation
+## Installation
 
 1. **Clone the repository**
    ```bash
@@ -75,22 +75,6 @@ Before you begin, ensure you have the following installed:
 2. **Access the application**
    - Frontend: `http://localhost:3000`
    - Backend API: `http://localhost/recipe-api`
-
-## Project Structure
-
-recipe-manager/
-├── recipe-frontend/          # React frontend application
-│   ├── public/              # Static files
-│   ├── src/                 # Source code
-│   │   ├── components/      # React components
-│   │   ├── styles/         # CSS files
-│   │   └── App.js          # Main application component
-│   └── package.json        # Frontend dependencies
-│
-└── recipe-api/             # PHP backend API
-    ├── config.php          # Database configuration
-    ├── get_recipes.php     # Recipe endpoints
-    └── get_ingredients.php # Ingredient endpoints
 
 
 ## API Endpoints
