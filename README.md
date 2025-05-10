@@ -12,7 +12,7 @@ This application demonstrates the implementation of a SPA using React and PHP
 - **Search Functionality**: Find recipes by title or ingredients
 - **User-Friendly Interface**: Clean and intuitive navigation
 
-## 🛠Technologies Used
+## Technologies Used
 
 ### Frontend
 - **React.js**: Modern JavaScript library for building user interfaces
