@@ -85,6 +85,3 @@ Before you begin, ensure you have the following installed:
 - `PUT /update_recipe.php`: Update an existing recipe
 - `DELETE /delete_recipe.php`: Remove a recipe
 
-## Contact
-
-Project Link: [https://github.com/yourusername/recipe-manager](https://github.com/yourusername/recipe-manager)
