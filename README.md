@@ -1,113 +1,106 @@
-# RecipeManager
-Creating a Web Application - Recipe Manager
+# Recipe Manager
 
-**Recipe Manager Web Application - Project Outline**
+A modern web application for managing and discovering recipes
+This application demonstrates the implementation of a SPA using React and PHP
 
-The Recipe Manager web application will allow users to:
 
-1. Add new recipes with a title, ingredients, and instructions.  
-2. View a list of saved recipes.  
-3. Edit or delete existing recipes.  
-4. Search for recipes by name.
+## Features
 
-<h3> Technologies Used: <h3/>  
+- **Recipe Discovery**: Browse through a collection of recipes
+- **Personal Recipe Collection**: Save and manage your favorite recipes
+- **Recipe Management**: Add, edit, and delete your own recipes
+- **Search Functionality**: Find recipes by title or ingredients
+- **User-Friendly Interface**: Clean and intuitive navigation
 
-<table>
-  <tr>
-    <th>Component</th>
-    <th>Technology</th>
-  </tr>
-  <tr>
-    <td>Frontend</td>
-    <td>React (JavaScript)</td>
-  </tr>
-  <tr>
-    <td>Backend</td>
-    <td>PHP (API)</td>
-  </tr>
-    <tr>
-    <td>Database</td>
-    <td>MySQL</td>
-  </tr>
-    <tr>
-    <td>Styling</td>
-    <td>Bootstrap</td>
-  </tr>
-  <tr>
-    <td>Hosting</td>
-    <td>mi-linux.wlv.ac.uk</td>
-  </tr>
-  <tr>
-    <td>Version Control</td>
-    <td>Git (GitHub)</td>
-  </tr>
-</table>
+## 🛠Technologies Used
 
-<h3>Features:</h3>
-  
-Recipe Management:
-<ul>
-  <li>Add a new recipe (title, ingredients, instructions).</li>
-  <li>Edit or delete recipes.</li>
-  <li>View a list of recipes.</li>
-  <li>Search for recipes by name.</li>
-</ul>
+### Frontend
+- **React.js**: Modern JavaScript library for building user interfaces
+- **React Router**: For handling navigation and routing
+- **Axios**: For making HTTP requests to the backend API
+- **CSS3**: For styling and responsive design
+- **LocalStorage API**: For client-side data persistence
 
-User-friendly Interface:
-<ul>
-  <li>Simple and clean UI using React and Bootstrap.</li>
-</ul>
+### Backend
+- **PHP**: Server-side scripting language
+- **MySQL**: Database management system
+- **Apache**: Web server
 
-Database Storage
-<ul> 
-  <li>Recipes will be stored in a MySQL database.</li>
-  <li>Each recipe will have an ID, title, ingredients, and instructions.</li>
-</ul>
+### Development Tools
+- **Node.js**: JavaScript runtime environment
+- **npm**: Package manager for JavaScript
+- **Create React App**: For bootstrapping the React application
+- **Git**: Version control system
 
-API Integration:
-<ul>
-  <li>The React frontend will communicate with the PHP backend using an API.</li>
-  <li>API will handle CRUD operations (Create, Read, Update, Delete).</li>
-</ul>
+## 📋 Prerequisites
 
-<h3>Implementation Plan:</h3>
-Frontend (React)
-<ul>
-  <li>Build a homepage displaying a list of recipes.</li>
-  <li>Create a form page for adding new recipes.</li>
-  <li>Implement an edit/delete feature.</li>
-  <li>Use Axios to send API requests.</li>
-</ul>
+Before you begin, ensure you have the following installed:
+- Node.js (v14.0.0 or higher)
+- PHP (v7.4 or higher)
+- MySQL (v5.7 or higher)
+- Apache web server
+- npm (comes with Node.js)
 
-Backend (PHP and SQL)
-<ul>
-  <li>Create a MySQL database with a recipes table.</li>
-  <li>Implement PHP API endpoints:</li>
-</ul>
+## 🚀 Installation
 
-<table>
-  <tr>
-    <th>GET /recipes</th>
-    <th>Retrieve all recipes.</th>
-  </tr>
-    <tr>
-    <th>POST /recipes</th>
-    <th>Add a new recipe.</th>
-  </tr>
-    <tr>
-    <th>PUT /recipes/:id</th>
-    <th>Edit a recipe.</th>
-  </tr>
-    <tr>
-    <th>DELETE /recipes/:id</th>
-    <th>Delete a recipe.</th>
-  </tr>
-</table>
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/recipe-manager.git
+   cd recipe-manager
+   ```
 
-Hosting and Deployment:
-<ul>
-  <li>Upload PHP backend to mi-linux.wlv.ac.uk.</li>
-  <li>Deploy React frontend (either on GitHub Pages or another method).</li>
-  <li>Ensure database connectivity.</li>
-  <li>Testing</li>
-</ul>
+2. **Install frontend dependencies**
+   ```bash
+   cd recipe-frontend
+   npm install
+   ```
+
+3. **Set up the backend**
+   - Copy the PHP files to your web server directory (e.g., `C:\wamp64\www\recipe-api`)
+   - Create a MySQL database and import the provided schema
+   - Update the database connection settings in `config.php`
+
+4. **Configure the application**
+   - Update the API endpoint in `src/config.js` if needed
+   - Ensure your web server is running and accessible
+
+## Running the Application
+
+1. **Start the frontend development server**
+   ```bash
+   cd recipe-frontend
+   npm start
+   ```
+
+2. **Access the application**
+   - Frontend: `http://localhost:3000`
+   - Backend API: `http://localhost/recipe-api`
+
+## Project Structure
+
+recipe-manager/
+├── recipe-frontend/          # React frontend application
+│   ├── public/              # Static files
+│   ├── src/                 # Source code
+│   │   ├── components/      # React components
+│   │   ├── styles/         # CSS files
+│   │   └── App.js          # Main application component
+│   └── package.json        # Frontend dependencies
+│
+└── recipe-api/             # PHP backend API
+    ├── config.php          # Database configuration
+    ├── get_recipes.php     # Recipe endpoints
+    └── get_ingredients.php # Ingredient endpoints
+
+
+## API Endpoints
+
+- `GET /get_recipes.php`: Retrieve all recipes
+- `GET /get_ingredients.php?recipe_id={id}`: Get ingredients for a specific recipe
+- `POST /add_recipe.php`: Add a new recipe
+- `PUT /update_recipe.php`: Update an existing recipe
+- `DELETE /delete_recipe.php`: Remove a recipe
+
+## Contact
+
+Project Link: [https://github.com/yourusername/recipe-manager](https://github.com/yourusername/recipe-manager)
